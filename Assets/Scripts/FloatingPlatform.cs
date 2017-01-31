@@ -5,6 +5,7 @@ public class FloatingPlatform : MonoBehaviour {
 	public float heightIncrease = 0.25f;
 	public float floatTime = 0.5f;
 	public float startY, endY;
+	public float startDelay = 0.1f;
 	// Use this for initialization
 	void Start () {
 		startY = this.transform.position.y;
@@ -18,7 +19,7 @@ public class FloatingPlatform : MonoBehaviour {
 	}
 
 	IEnumerator FloatRoutine(){
-		yield return new WaitForSeconds (UnityEngine.Random.Range (0f, 0.5f));
+		yield return new WaitForSeconds (startDelay);
 		float timer = 0f;
 		while (true) {
 			while (timer < floatTime) {
