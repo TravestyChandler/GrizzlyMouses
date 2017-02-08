@@ -244,6 +244,7 @@
     <Compile Include="Assets\PhotonChatApi\ChatState.cs" />
     <Compile Include="Assets\PhotonChatApi\ChatUserStatus.cs" />
     <Compile Include="Assets\PhotonChatApi\IChatClientListener.cs" />
+    <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\FloatingPlatform.cs" />
     <Compile Include="Assets\Scripts\FrameMover.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
