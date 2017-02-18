@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour {
     public bool canTravel = true;
     public Rigidbody2D rb;
     public float jumpVelocity;
+    public LayerMask groundLayers;
 	// Use this for initialization
 	void Start () {
         rb = this.GetComponent<Rigidbody2D>();
@@ -58,8 +59,8 @@ public class PlayerController : MonoBehaviour {
     }
 	public bool IsGrounded(){
         Ray2D ray2D = new Ray2D(transform.position, Vector2.down);
-        RaycastHit2D hit2D = Physics2D.Raycast(transform.position, Vector2.down, groundedDist);
-        if(hit2D.collider != null)
+        RaycastHit2D hit2D = Physics2D.Raycast(transform.position, Vector2.down, groundedDist,groundLayers);
+        if (hit2D.collider != null && hit2D.collider.name != this.name)
         {
             return true;
         }
