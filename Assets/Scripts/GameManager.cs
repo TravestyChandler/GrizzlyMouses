@@ -15,18 +15,21 @@ public class GameManager : MonoBehaviour {
     public GamePhase phase = GamePhase.Starting;
     public bool networkedGame = false;
     public GameObject NetworkObjects;
-    
+    public PhotonView photView;
+    public float speedReduction = -0.5f;
     public enum GamePhase {
         Starting,
         Running,
         GameOver,
         Invalid
     }
+
     // Use this for initialization
     void Start() {
         phase = GamePhase.Starting;
         if (instance == null) {
             instance = this;
+            photView = PhotonView.Get(this);
         } else {
             Destroy(this);
             return;
@@ -43,19 +46,65 @@ public class GameManager : MonoBehaviour {
     [PunRPC]
     public void RPCStartGame()
     {
-        for (int i = 0; i < startFrames; i++)
+        if (networkedGame)
         {
-            Spawn();
+            if (PhotonNetwork.playerName == "1")
+            {
+                for (int i = 0; i < startFrames; i++)
+                {
+                    int idl = PhotonNetwork.AllocateViewID();
+                    int val = UnityEngine.Random.Range(0, FramePrefabs.Count);
+                    photView.RPC("RPCSpawn", PhotonTargets.All, val, idl, PhotonNetwork.player);
+                }
+            }
+            else
+            {
+
+            }
+        }
+        else if (!networkedGame)
+        {
+            for (int i = 0; i < startFrames; i++)
+            {
+                Spawn();
+            }
         }
         StartCoroutine(StartGameRoutine());
 
     }
 
+    public void SlowCharacter()
+    {
+        CurrentSpeed -= speedReduction;
+    }
+    public void OnPhotonSerializeView()
+    {
+        Debug.Log("Need to properly implement ONphotonserializeview()");
+    }
+
     public void StartGame()
     {
-        for (int i = 0; i < startFrames; i++)
+        if (networkedGame)
         {
-            Spawn();
+            if (PhotonNetwork.playerName == "1")
+            {
+                for (int i = 0; i < startFrames; i++)
+                {
+                    int val = UnityEngine.Random.Range(0, FramePrefabs.Count);
+                    photView.RPC("RPCSpawn", PhotonTargets.All, val);
+                }
+            }
+            else
+            {
+
+            }
+        }
+        else if(!networkedGame)
+        {
+            for (int i = 0; i < startFrames; i++)
+            {
+                Spawn();
+            }
         }
         StartCoroutine(StartGameRoutine());
 
@@ -107,6 +156,7 @@ public class GameManager : MonoBehaviour {
         }
 	}
 
+    [PunRPC]
     public void PlayerDeath()
     {
         phase = GamePhase.GameOver;
@@ -120,8 +170,23 @@ public class GameManager : MonoBehaviour {
         Destroy(frame.gameObject);
     }
 
+    [PunRPC]
+    public void RPCSpawn(int value, int photonID, PhotonPlayer np)
+    {
+
+        
+        Debug.Log("Spawning frames: " + value);
+        GameObject frameObj = Instantiate(FramePrefabs[value], Vector3.one * 100f, Quaternion.identity);
+        PhotonView nviews = frameObj.GetComponent<PhotonView>();
+        nviews.viewID = photonID;
+        FrameMover frame = frameObj.GetComponent<FrameMover>();
+        frames.Add(frame);
+        frame.FramePlacement(frames[frames.Count - 2]);
+    }
+
     public void Spawn()
     {
+        Debug.Log("Non-networked spawn");
         int rand = Random.Range(0, FramePrefabs.Count);
         GameObject frameObj = Instantiate(FramePrefabs[rand], Vector3.one * 100f, Quaternion.identity);
         FrameMover frame = frameObj.GetComponent<FrameMover>();

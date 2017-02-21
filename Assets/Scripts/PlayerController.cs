@@ -18,28 +18,52 @@ public class PlayerController : MonoBehaviour {
     public Rigidbody2D rb;
     public float jumpVelocity;
     public LayerMask groundLayers;
+    public PhotonView photonView;
 	// Use this for initialization
 	void Start () {
         rb = this.GetComponent<Rigidbody2D>();
+        photonView = PhotonView.Get(this);
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (GameManager.instance.phase == GameManager.GamePhase.Running && IsGrounded() && canJump) {
-            if (Input.GetKeyDown(JumpButton)) { 
-                Jump();
-             }
+            if (GameManager.instance.networkedGame && PhotonNetwork.playerName == "1")
+            {
+                if (Input.GetKeyDown(JumpButton))
+                {
+                    photonView.RPC("Jump", PhotonTargets.All);
+                }
+            }
+            else if(!GameManager.instance.networkedGame){
+                if (Input.GetKeyDown(JumpButton))
+                {
+                    Jump();
+                }
+            }
 		}
         if(GameManager.instance.phase == GameManager.GamePhase.Running && canTravel)
         {
-            if (Input.GetKeyDown(TravelButton))
+            if (GameManager.instance.networkedGame && PhotonNetwork.playerName == "2")
             {
-                TimeTravel();
+
+                if (Input.GetKeyDown(TravelButton))
+                {
+                    photonView.RPC("TimeTravel", PhotonTargets.All);
+                }
+            }
+            else if (!GameManager.instance.networkedGame)
+            {
+                if (Input.GetKeyDown(TravelButton))
+                {
+                    TimeTravel();
+                }
             }
         }
 
     }
 
+    [PunRPC]
 	public void Jump(){
         rb.velocity += new Vector2(0f, jumpVelocity);
         canJump = false;
@@ -57,6 +81,7 @@ public class PlayerController : MonoBehaviour {
         }
         canJump = true;
     }
+
 	public bool IsGrounded(){
         Ray2D ray2D = new Ray2D(transform.position, Vector2.down);
         RaycastHit2D hit2D = Physics2D.Raycast(transform.position, Vector2.down, groundedDist,groundLayers);
@@ -84,14 +109,27 @@ public class PlayerController : MonoBehaviour {
     {
         if (col.tag.Equals("obstacle"))
         {
-            HitObstacle();
+            if (GameManager.instance.networkedGame)
+            {
+                photonView.RPC("HitObstacle", PhotonTargets.All);
+            }
+            else {
+                HitObstacle();
+            }
         }
         else if (col.tag.Equals("deathbarrier"))
         {
-            Death();
+            if (GameManager.instance.networkedGame)
+            {
+                photonView.RPC("Death", PhotonTargets.All);
+            }
+            else {
+                Death();
+            }
         }
     }
 
+    [PunRPC]
     public void Death()
     {
         rb.gravityScale = 0f;
@@ -100,11 +138,13 @@ public class PlayerController : MonoBehaviour {
         
     }
 
+    [PunRPC]
     public void HitObstacle()
     {
-        Debug.Log("hit obstacle routine needs implemented");
+        
     }
 
+    [PunRPC]
     public void TimeTravel()
     {
         if (inPresent)
