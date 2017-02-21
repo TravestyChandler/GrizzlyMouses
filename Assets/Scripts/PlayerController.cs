@@ -88,14 +88,18 @@ public class PlayerController : MonoBehaviour {
         }
         else if (col.tag.Equals("deathbarrier"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            Death();
         }
     }
 
     public void Death()
     {
-
+        rb.gravityScale = 0f;
+        rb.velocity = Vector3.zero;
+        GameManager.instance.PlayerDeath();
+        
     }
+
     public void HitObstacle()
     {
         Debug.Log("hit obstacle routine needs implemented");
