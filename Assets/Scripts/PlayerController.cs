@@ -93,15 +93,6 @@ public class PlayerController : MonoBehaviour {
         {
             return false;
         }
-		//Ray ray = new Ray (transform.position, Vector2.down);
-  //      Debug.DrawRay(transform.position, Vector2.down);
-		//RaycastHit hit;
-		//if (Physics.Raycast (ray, out hit, groundedDist) ){
-  //          Debug.Log("grounded");
-		//	return true;
-		//} else {
-		//	return false;
-		//}
 	}
 
 
@@ -161,8 +152,10 @@ public class PlayerController : MonoBehaviour {
                 inPresent = !inPresent;
                 canTravel = false;
                 Debug.Log("Traveling to other time");
-
                 this.transform.position = newPos;
+				if (PhotonNetwork.isMasterClient) {
+					CameraController.Instance.SwapCameras (inPresent);
+				}
             }
         }
         else
@@ -180,6 +173,9 @@ public class PlayerController : MonoBehaviour {
                 inPresent = !inPresent;
                 canTravel = false;
                 this.transform.position = newPos;
+				if (PhotonNetwork.isMasterClient) {
+					CameraController.Instance.SwapCameras (inPresent);
+				}
             }
         }
         if (!canTravel)
