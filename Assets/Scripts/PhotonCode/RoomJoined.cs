@@ -18,7 +18,7 @@ public class RoomJoined : MonoBehaviour {
             UIController.Instance.SetPlayerText("2");
             PhotonNetwork.playerName = "2";
             PhotonView photonView = PhotonView.Get(GameManager.instance);
-            photonView.RPC("RPCStartGame", PhotonTargets.All);
+            photonView.RPC("ReadyUp", PhotonTargets.All);
         }
     }
 }

@@ -18,6 +18,10 @@ public class GameManager : MonoBehaviour {
     public PhotonView photView;
     public float speedReduction = -0.5f;
     public string[] frameNames;
+
+	public bool player1Ready = false;
+	public bool player2Ready = false;
+
     public enum GamePhase {
         Starting,
         Running,
@@ -44,10 +48,23 @@ public class GameManager : MonoBehaviour {
 
     }
 
+	public void PlayerReady(){
+		if (PhotonNetwork.isMasterClient) {
+			player1Ready = true;
+		} else {
+			player2Ready = true;
+		}
+	}
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        Debug.Log("Nothing implementated in OnPhotonSerialization");
-    }
+
+	}
+
+	[PunRPC]
+	public void ReadyUp(){
+		UIController.Instance.ShowReadyButton ();
+	}
 
     [PunRPC]
     public void RPCStartGame()
@@ -134,15 +151,24 @@ public class GameManager : MonoBehaviour {
 
     public void RestartGame()
     {
+		PhotonNetwork.LeaveRoom ();
         SceneManager.LoadScene("MainGame");
     }
     public void ToMainMenu()
     {
+		PhotonNetwork.LeaveRoom ();
         SceneManager.LoadScene("MainMenu");
     }
 
     // Update is called once per frame
     void Update () {
+		if (player1Ready && player2Ready && phase == GamePhase.Starting) {
+			
+		} 
+		if (!PhotonNetwork.isMasterClient) {
+			CurrentSpeed = 0f;
+			return;
+		}
         if (phase == GamePhase.Starting)
         {
             CurrentSpeed = 0f;
@@ -162,6 +188,10 @@ public class GameManager : MonoBehaviour {
         {
             CurrentSpeed = 0f;
         }
+		for(int i = 0; i < frames.Count; i++){
+			float newX = frames [i].transform.position.x;
+			photView.RPC ("SetFrameX", PhotonTargets.Others, newX, i);
+		}
     }
 
     [PunRPC]
@@ -182,6 +212,13 @@ public class GameManager : MonoBehaviour {
         frames.Remove(frame);
         Destroy(frame.gameObject);
     }
+
+	[PunRPC]
+	public void SetFrameX(float x, int frame){
+		Vector3 pos = frames [frame].transform.position;
+		pos.x = x;
+		frames [frame].transform.position = pos;
+	}
 
     [PunRPC]
     public void RPCSpawn(int value, int photonID)

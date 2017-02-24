@@ -10,6 +10,7 @@ public class UIController : MonoBehaviour {
     public Text countdownText;
     public Text playerText;
     public RectTransform deathMenu;
+	public Button ReadyUpButton;
     public float deathPanelTimer = 0.25f;
 	// Use this for initialization
 	void Awake () {
@@ -40,5 +41,14 @@ public class UIController : MonoBehaviour {
     {
         playerText.text = "Player " + playerNum;
     }
+
+	public void ShowReadyButton(){
+		ReadyUpButton.enabled = true;
+		//GameManager.instance.photView.RPC ("ReadyUp", PhotonTargets.All);
+	}
+
+	public void CloseReadyButton(){
+		ReadyUpButton.enabled = false;
+	}
     
 }
