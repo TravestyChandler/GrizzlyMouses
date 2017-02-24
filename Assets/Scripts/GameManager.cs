@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
     public GameObject NetworkObjects;
     public PhotonView photView;
     public float speedReduction = -0.5f;
+    public string[] frameNames;
     public enum GamePhase {
         Starting,
         Running,
@@ -43,18 +44,23 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        Debug.Log("Nothing implementated in OnPhotonSerialization");
+    }
+
     [PunRPC]
     public void RPCStartGame()
     {
         if (networkedGame)
         {
-            if (PhotonNetwork.playerName == "1")
+            if (PhotonNetwork.isMasterClient)
             {
                 for (int i = 0; i < startFrames; i++)
                 {
-                    int idl = PhotonNetwork.AllocateViewID();
                     int val = UnityEngine.Random.Range(0, FramePrefabs.Count);
-                    photView.RPC("RPCSpawn", PhotonTargets.All, val, idl, PhotonNetwork.player);
+                    int id = PhotonNetwork.AllocateViewID();
+                    photView.RPC("RPCSpawn", PhotonTargets.All, val, id);
                 }
             }
             else
@@ -77,21 +83,20 @@ public class GameManager : MonoBehaviour {
     {
         CurrentSpeed -= speedReduction;
     }
-    public void OnPhotonSerializeView()
-    {
-        Debug.Log("Need to properly implement ONphotonserializeview()");
-    }
+
 
     public void StartGame()
     {
         if (networkedGame)
         {
-            if (PhotonNetwork.playerName == "1")
+            if (PhotonNetwork.isMasterClient)
             {
                 for (int i = 0; i < startFrames; i++)
                 {
                     int val = UnityEngine.Random.Range(0, FramePrefabs.Count);
-                    photView.RPC("RPCSpawn", PhotonTargets.All, val);
+                    int id = PhotonNetwork.AllocateViewID();
+                    photView.RPC("RPCSpawn", PhotonTargets.All, val, id);
+                    //photView.RPC("RPCSpawn", PhotonTargets.All, val);
                 }
             }
             else
@@ -138,23 +143,26 @@ public class GameManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		if (phase == GamePhase.Starting) {
-			CurrentSpeed = 0f;
-		} else if (phase == GamePhase.Running) {
-            if(CurrentSpeed > maxSpeed)
-            {
-                CurrentSpeed -= (speedIncreasePerSec * Time.deltaTime);
-            }
-            else if(CurrentSpeed < maxSpeed)
-            {
-                CurrentSpeed = maxSpeed;
-            }
-		}
-        if(phase == GamePhase.GameOver)
+        if (phase == GamePhase.Starting)
         {
             CurrentSpeed = 0f;
         }
-	}
+        else if (phase == GamePhase.Running)
+        {
+            if (CurrentSpeed > maxSpeed)
+            {
+                CurrentSpeed -= (speedIncreasePerSec * Time.deltaTime);
+            }
+            else if (CurrentSpeed < maxSpeed)
+            {
+                CurrentSpeed = maxSpeed;
+            }
+        }
+        if (phase == GamePhase.GameOver)
+        {
+            CurrentSpeed = 0f;
+        }
+    }
 
     [PunRPC]
     public void PlayerDeath()
@@ -165,13 +173,18 @@ public class GameManager : MonoBehaviour {
 
     public void Despawn(FrameMover frame)
     {
-        Spawn();
+        if (PhotonNetwork.isMasterClient)
+        {
+            int val = UnityEngine.Random.Range(0, FramePrefabs.Count);
+            int id = PhotonNetwork.AllocateViewID();
+            photView.RPC("RPCSpawn", PhotonTargets.All, val, id);
+        }
         frames.Remove(frame);
         Destroy(frame.gameObject);
     }
 
     [PunRPC]
-    public void RPCSpawn(int value, int photonID, PhotonPlayer np)
+    public void RPCSpawn(int value, int photonID)
     {
 
         
@@ -193,6 +206,7 @@ public class GameManager : MonoBehaviour {
         frames.Add(frame);
         frame.FramePlacement(frames[frames.Count - 2]);
     }
+
 
 	public void PlayerImpact(){
 		//reduce game speed and delay before player can be hit again(maybe handle the second part in the player controller

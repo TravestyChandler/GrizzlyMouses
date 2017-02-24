@@ -11,6 +11,8 @@ public class RoomJoined : MonoBehaviour {
         {
             PhotonNetwork.playerName = "1";
             UIController.Instance.SetPlayerText("1");
+            GameManager.instance.photView.RequestOwnership();
+
         }
         else if (PhotonNetwork.playerList.Length == 2){
             UIController.Instance.SetPlayerText("2");
