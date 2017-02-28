@@ -189,8 +189,10 @@ public class GameManager : MonoBehaviour {
             CurrentSpeed = 0f;
         }
 		for(int i = 0; i < frames.Count; i++){
-			float newX = frames [i].transform.position.x;
-			photView.RPC ("SetFrameX", PhotonTargets.Others, newX, i);
+			if (frames [i] != null) {
+				float newX = frames [i].transform.position.x;
+				photView.RPC ("SetFrameX", PhotonTargets.Others, newX, i);
+			}
 		}
     }
 
