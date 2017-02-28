@@ -7,6 +7,7 @@ public class UIController : MonoBehaviour {
     public static UIController Instance;
 
     public GameOverPanel gameOver;
+    public RoomList room;
     public Text countdownText;
     public Text playerText;
     public RectTransform deathMenu;

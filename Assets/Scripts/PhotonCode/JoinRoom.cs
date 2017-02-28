@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class JoinRoom : MonoBehaviour {
 
+    
 	/// <summary>Connect automatically? If false you can set this to true later on or call ConnectUsingSettings in your own scripts.</summary>
 	public bool AutoConnect = true;
 
@@ -16,18 +17,29 @@ public class JoinRoom : MonoBehaviour {
 	public virtual void Start()
 	{
 		PhotonNetwork.autoJoinLobby = false;    // we join randomly. always. no need to join a lobby to get the list of rooms.
-	}
+
+    }
+
+    public void ShowRoomList()
+    {
+        RoomInfo[] ris = PhotonNetwork.GetRoomList();
+        foreach (RoomInfo room in PhotonNetwork.GetRoomList())
+        {
+            Debug.Log(room.Name);
+            UIController.Instance.room.SetupRoom(room);
+        }
+    }
 
 	public virtual void Update()
 	{
-		if (ConnectInUpdate && AutoConnect && !PhotonNetwork.connected)
-		{
-			Debug.Log("Update() was called by Unity. Scene is loaded. Let's connect to the Photon Master Server. Calling: PhotonNetwork.ConnectUsingSettings();");
+        if (ConnectInUpdate && AutoConnect && !PhotonNetwork.connected)
+        {
+            Debug.Log("Update() was called by Unity. Scene is loaded. Let's connect to the Photon Master Server. Calling: PhotonNetwork.ConnectUsingSettings();");
 
-			ConnectInUpdate = false;
-			PhotonNetwork.ConnectUsingSettings(Version + "." + SceneManagerHelper.ActiveSceneBuildIndex);
-		}
-	}
+            ConnectInUpdate = false;
+            PhotonNetwork.ConnectUsingSettings(Version + "." + SceneManagerHelper.ActiveSceneBuildIndex);
+        }
+    }
 
 
 	// below, we implement some callbacks of PUN
@@ -43,10 +55,11 @@ public class JoinRoom : MonoBehaviour {
 	public virtual void OnJoinedLobby()
 	{
 		Debug.Log("OnJoinedLobby(). This client is connected and does get a room-list, which gets stored as PhotonNetwork.GetRoomList(). This script now calls: PhotonNetwork.JoinRandomRoom();");
-		PhotonNetwork.JoinRandomRoom();
-	}
+        PhotonNetwork.JoinRandomRoom();
 
-	public virtual void OnPhotonRandomJoinFailed()
+    }
+
+    public virtual void OnPhotonRandomJoinFailed()
 	{
 		Debug.Log("OnPhotonRandomJoinFailed() was called by PUN. No random room available, so we create one. Calling: PhotonNetwork.CreateRoom(null, new RoomOptions() {maxPlayers = 4}, null);");
 		PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = 2 }, null);
