@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour {
     public PhotonView photView;
     public float speedReduction = -0.5f;
     public string[] frameNames;
-
+    public float previousSpeed = 0f;
 	public bool player1Ready = false;
 	public bool player2Ready = false;
 
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour {
         Starting,
         Running,
         GameOver,
+        Paused,
         Invalid
     }
 
@@ -165,10 +166,11 @@ public class GameManager : MonoBehaviour {
 		if (player1Ready && player2Ready && phase == GamePhase.Starting) {
 			
 		} 
-		//if (!PhotonNetwork.isMasterClient) {
-		//	CurrentSpeed = 0f;
-		//	return;
-		//}
+        if(phase == GamePhase.Paused)
+        {
+            CurrentSpeed = 0f;
+            return;
+        }
         if (phase == GamePhase.Starting)
         {
             CurrentSpeed = 0f;
@@ -177,10 +179,12 @@ public class GameManager : MonoBehaviour {
         {
             if (CurrentSpeed > maxSpeed)
             {
+                previousSpeed = CurrentSpeed;
                 CurrentSpeed -= (speedIncreasePerSec * Time.deltaTime);
             }
             else if (CurrentSpeed < maxSpeed)
             {
+                previousSpeed = CurrentSpeed;
                 CurrentSpeed = maxSpeed;
             }
         }
@@ -235,8 +239,34 @@ public class GameManager : MonoBehaviour {
         Destroy(frame.gameObject);
     }
 
+
+    [PunRPC]
+    public void PauseGame()
+    {
+        if (phase == GamePhase.Paused)
+        {
+            phase = GamePhase.Running;
+            CurrentSpeed = previousSpeed;
+        }
+        else if (phase == GamePhase.Running)
+        {
+            phase = GamePhase.Paused;
+        }
+        else
+        {
+            Debug.Log("Can't pause while not playing game");
+        }
+    }
 	[PunRPC]
 	public void SetFrameX(float x, int frame){
+        if (frame > frames.Count)
+        {
+            return;   
+        }
+        else if(frames[frame] == null)
+        {
+            return;
+        }
 		Vector3 pos = frames [frame].transform.position;
 		pos.x = x;
 		frames [frame].transform.position = pos;

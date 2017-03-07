@@ -10,10 +10,12 @@ public class UIController : MonoBehaviour {
     public RoomList room;
     public Text countdownText;
     public Text playerText;
+    public Text distTraveled;
     public RectTransform deathMenu;
 	public Button ReadyUpButton;
     public float deathPanelTimer = 0.25f;
     public float roomListPanelTimer = 0.25f;
+    public float distanceTraveled = 0f;
 	// Use this for initialization
 	void Awake () {
 		if(Instance == null)
@@ -44,9 +46,14 @@ public class UIController : MonoBehaviour {
     }
     // Update is called once per frame
     void Update () {
-		
+        distanceTraveled += (GameManager.instance.CurrentSpeed * Time.deltaTime);
+        distTraveled.text = (Mathf.Abs((int)distanceTraveled)).ToString() + " meters";
 	}
 
+    public void PauseGame()
+    {
+        GameManager.instance.photView.RPC("PauseGame", PhotonTargets.All);
+    }
     public void SetPlayerText(string playerNum)
     {
         playerText.text = "Player " + playerNum;

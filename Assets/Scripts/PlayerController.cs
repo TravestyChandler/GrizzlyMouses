@@ -19,9 +19,14 @@ public class PlayerController : MonoBehaviour {
     public float jumpVelocity;
     public LayerMask groundLayers;
     public PhotonView photonView;
+    public bool isDamaged = false;
+    public float DamageTimer = 1f;
+    public SpriteRenderer sp;
 	// Use this for initialization
 	void Start () {
         rb = this.GetComponent<Rigidbody2D>();
+        sp = this.GetComponent<SpriteRenderer>();
+
         photonView = PhotonView.Get(this);
 	}
 	
@@ -69,6 +74,7 @@ public class PlayerController : MonoBehaviour {
         canJump = false;
         Debug.Log("jumping");
         StartCoroutine(JumpRoutine());
+        SoundManager.Instance.PlaySFX("Jump", 100);
 	}
 
     public IEnumerator JumpRoutine()
@@ -81,6 +87,7 @@ public class PlayerController : MonoBehaviour {
         }
         canJump = true;
     }
+
 
 	public bool IsGrounded(){
         Ray2D ray2D = new Ray2D(transform.position, Vector2.down);
@@ -132,7 +139,36 @@ public class PlayerController : MonoBehaviour {
     [PunRPC]
     public void HitObstacle()
     {
-        
+        StartCoroutine(DamageRoutine());
+    }
+
+    public IEnumerator DamageRoutine()
+    {
+        Debug.Log("Character Damaged");
+        float totalTimer = 0f;
+        while (totalTimer < DamageTimer)
+        {
+            float timer = 0f;
+            float flashTime = 0.5f;
+            while (timer < flashTime)
+            {
+                timer += Time.deltaTime;
+                totalTimer += Time.deltaTime;
+                float colorVal = Mathf.Lerp(1f, 0.25f, timer / flashTime);
+                sp.color = new Color(1f, colorVal, colorVal);
+                yield return null;
+            }
+            timer = 0f;
+            while(timer < flashTime)
+            {
+                timer += Time.deltaTime;
+                totalTimer += Time.deltaTime;
+                float colorVal = Mathf.Lerp(0.25f, 1f, timer / flashTime);
+                sp.color = new Color(1f, colorVal, colorVal);
+                yield return null;
+            }
+        }
+        sp.color = Color.white;
     }
 
     [PunRPC]
@@ -156,6 +192,7 @@ public class PlayerController : MonoBehaviour {
 				if (PhotonNetwork.isMasterClient) {
 					CameraController.Instance.SwapCameras (inPresent);
 				}
+                SoundManager.Instance.PlaySFX("TimeTravel", 100);
             }
         }
         else
@@ -176,6 +213,7 @@ public class PlayerController : MonoBehaviour {
 				if (PhotonNetwork.isMasterClient) {
 					CameraController.Instance.SwapCameras (inPresent);
 				}
+                SoundManager.Instance.PlaySFX("TimeTravel", 100);
             }
         }
         if (!canTravel)
