@@ -165,10 +165,10 @@ public class GameManager : MonoBehaviour {
 		if (player1Ready && player2Ready && phase == GamePhase.Starting) {
 			
 		} 
-		if (!PhotonNetwork.isMasterClient) {
-			CurrentSpeed = 0f;
-			return;
-		}
+		//if (!PhotonNetwork.isMasterClient) {
+		//	CurrentSpeed = 0f;
+		//	return;
+		//}
         if (phase == GamePhase.Starting)
         {
             CurrentSpeed = 0f;
@@ -188,12 +188,32 @@ public class GameManager : MonoBehaviour {
         {
             CurrentSpeed = 0f;
         }
-		for(int i = 0; i < frames.Count; i++){
-			if (frames [i] != null) {
-				float newX = frames [i].transform.position.x;
-				photView.RPC ("SetFrameX", PhotonTargets.Others, newX, i);
-			}
-		}
+        foreach(FrameMover fr in frames)
+        {
+            if (fr != null)
+            {
+                fr.transform.Translate(new Vector2(CurrentSpeed, 0f) * Time.deltaTime);
+            }
+        }
+        if (PhotonNetwork.isMasterClient)
+        {
+            for (int i = 0; i < frames.Count; i++)
+            {
+                if (frames[i] != null)
+                {
+                    float newX = frames[i].transform.position.x;
+                    if (frames[i].frameUpdateCount >= frames[i].frameUpdateTime)
+                    {
+                        frames[i].frameUpdateCount = 0;
+                        photView.RPC("SetFrameX", PhotonTargets.Others, newX, i);
+                    }
+                    else
+                    {
+                        frames[i].frameUpdateCount++;
+                    }
+                }
+            }
+        }
     }
 
     [PunRPC]

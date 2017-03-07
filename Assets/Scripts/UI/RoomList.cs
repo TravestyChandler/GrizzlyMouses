@@ -7,19 +7,71 @@ public class RoomList : MonoBehaviour {
     public RectTransform contentPanel;
     public GameObject roomItemPrefab;
     public InputField UserNameField;
+    public RectTransform rect;
     // Use this for initialization
     public void SetupRoom(RoomInfo ri)
     {
+        foreach (RoomItem roomItem in contentPanel.GetComponentsInChildren<RoomItem>())
+        {
+            Destroy(roomItem.gameObject);
+        }
+        if(ri.PlayerCount == 2)
+        {
+            return;
+        }
         RoomItem ro = Instantiate(roomItemPrefab, contentPanel).GetComponent<RoomItem>();
-        ro.name = ri.Name;
-        
+        ro.GetComponent<RectTransform>().localScale = Vector3.one;
+        ro.roomName.text = ri.Name;
+        if (ri.CustomProperties.ContainsKey("PlayerName"))
+        {
+            ro.roomUser.text = ri.CustomProperties["PlayerName"].ToString();
+        }
     }
 
     public void CreateRoom()
     {
+       
         RoomOptions rop = new RoomOptions();
         rop.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
+        rop.MaxPlayers = 2;
+        rop.IsVisible = true;
         rop.CustomRoomProperties.Add("PlayerName", UserNameField.text);
-        PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = 2 }, null);
+        PhotonNetwork.CreateRoom(null, rop, null);
+        Close(UIController.Instance.roomListPanelTimer);
+    }
+
+    public void Close(float closeTime)
+    {
+        StartCoroutine(ClosePanel(closeTime));
+    }
+
+    IEnumerator ClosePanel(float closeTime)
+    {
+        float timer = 0f;
+        while (timer < closeTime)
+        {
+            yield return null;
+            timer += Time.deltaTime;
+            float val = Mathf.Lerp(1, 0, timer / closeTime);
+            rect.localScale = new Vector3(val, val, val);
+        }
+        rect.localScale = Vector3.zero;
+    }
+    public void Open(float openTime)
+    {
+        StartCoroutine(OpenPanel(openTime));
+    }
+
+    public IEnumerator OpenPanel(float openTime)
+    {
+        float timer = 0f;
+        while (timer < openTime)
+        {
+            yield return null;
+            timer += Time.deltaTime;
+            float val = Mathf.Lerp(0, 1, timer / openTime);
+            rect.localScale = new Vector3(val, val, val);
+        }
+        rect.localScale = Vector3.one;
     }
 }

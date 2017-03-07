@@ -13,6 +13,7 @@ public class UIController : MonoBehaviour {
     public RectTransform deathMenu;
 	public Button ReadyUpButton;
     public float deathPanelTimer = 0.25f;
+    public float roomListPanelTimer = 0.25f;
 	// Use this for initialization
 	void Awake () {
 		if(Instance == null)
@@ -32,9 +33,17 @@ public class UIController : MonoBehaviour {
         gameOver.Open(deathPanelTimer);
     }
 
-	
-	// Update is called once per frame
-	void Update () {
+    public void RoomListPopUp()
+    {
+        room.Open(roomListPanelTimer);
+    }
+
+    public void CloseRoomList()
+    {
+        room.Close(roomListPanelTimer);
+    }
+    // Update is called once per frame
+    void Update () {
 		
 	}
 

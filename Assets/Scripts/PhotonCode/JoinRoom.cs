@@ -16,17 +16,25 @@ public class JoinRoom : MonoBehaviour {
 
 	public virtual void Start()
 	{
-		PhotonNetwork.autoJoinLobby = false;    // we join randomly. always. no need to join a lobby to get the list of rooms.
+		PhotonNetwork.autoJoinLobby = true;    // we join randomly. always. no need to join a lobby to get the list of rooms.
 
     }
 
     public void ShowRoomList()
     {
         RoomInfo[] ris = PhotonNetwork.GetRoomList();
-        foreach (RoomInfo room in PhotonNetwork.GetRoomList())
+        UIController.Instance.RoomListPopUp();
+        if (ris.Length > 0)
         {
-            Debug.Log(room.Name);
-            UIController.Instance.room.SetupRoom(room);
+            foreach (RoomInfo room in PhotonNetwork.GetRoomList())
+            {
+                Debug.Log(room.Name);
+                UIController.Instance.room.SetupRoom(room);
+            }
+        }
+        else
+        {
+            Debug.Log("No rooms exist, please create one.");
         }
     }
 
@@ -49,20 +57,17 @@ public class JoinRoom : MonoBehaviour {
 	public virtual void OnConnectedToMaster()
 	{
 		Debug.Log("OnConnectedToMaster() was called by PUN. Now this client is connected and could join a room. Calling: PhotonNetwork.JoinRandomRoom();");
-		PhotonNetwork.JoinRandomRoom();
-	}
+    }
 
 	public virtual void OnJoinedLobby()
 	{
 		Debug.Log("OnJoinedLobby(). This client is connected and does get a room-list, which gets stored as PhotonNetwork.GetRoomList(). This script now calls: PhotonNetwork.JoinRandomRoom();");
-        PhotonNetwork.JoinRandomRoom();
-
     }
 
     public virtual void OnPhotonRandomJoinFailed()
 	{
 		Debug.Log("OnPhotonRandomJoinFailed() was called by PUN. No random room available, so we create one. Calling: PhotonNetwork.CreateRoom(null, new RoomOptions() {maxPlayers = 4}, null);");
-		PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = 2 }, null);
+		PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = 2, IsVisible = true }, null);
 	}
 
 	// the following methods are implemented to give you some context. re-implement them as needed.
@@ -71,9 +76,16 @@ public class JoinRoom : MonoBehaviour {
 	{
 		Debug.LogError("Cause: " + cause);
 	}
+    public void OnReceivedRoomListUpdate()
+    {
+        Debug.Log("list updated");
+        Debug.Log(PhotonNetwork.GetRoomList().Length);
+        ShowRoomList();
+    }
 
-	public void OnJoinedRoom()
+    public void OnJoinedRoom()
 	{
 		Debug.Log("OnJoinedRoom() called by PUN. Now this client is in a room. From here on, your game would be running. For reference, all callbacks are listed in enum: PhotonNetworkingMessage");
-	}
+        Debug.Log(PhotonNetwork.GetRoomList().Length);
+    }
 }
