@@ -78,9 +78,12 @@ public class JoinRoom : MonoBehaviour {
 	}
     public void OnReceivedRoomListUpdate()
     {
-        Debug.Log("list updated");
-        Debug.Log(PhotonNetwork.GetRoomList().Length);
-        ShowRoomList();
+        if (!PhotonNetwork.inRoom)
+        {
+            Debug.Log("list updated");
+            Debug.Log(PhotonNetwork.GetRoomList().Length);
+            ShowRoomList();
+        }
     }
 
     public void OnJoinedRoom()

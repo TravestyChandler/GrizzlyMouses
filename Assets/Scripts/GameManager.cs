@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
     public Vector2 StartVector, EndVector;
+    public Vector2 BackStartVector, backEndVector;
     public float CurrentSpeed = 1f;
     public float startSpeed, maxSpeed;
     public float speedIncreasePerSec;
@@ -48,6 +49,7 @@ public class GameManager : MonoBehaviour {
         }
 
     }
+
 
 	public void PlayerReady(){
 		if (PhotonNetwork.isMasterClient) {
@@ -150,14 +152,42 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    public void RPCRestartGame()
+    {
+        //Delete all frames, place new start frame, reset score, start countdown over
+        for (int i = 0; i < frames.Count; ++i)
+        {
+            GameObject game = frames[i].gameObject;
+            frames[i] = null;
+            Destroy(game);
+        }
+        GameObject startFrame = Instantiate(FramePrefabs[0], new Vector3(0f, 0f, 0f), Quaternion.identity);
+        frames[0] = startFrame.GetComponent<FrameMover>();
+        StartCoroutine(StartGameRoutine());
+    }
+
     public void RestartGame()
     {
-		PhotonNetwork.LeaveRoom ();
-        SceneManager.LoadScene("MainGame");
+        //Delete all frames, place new start frame, reset score, start countdown over
+        for(int i = 0; i < frames.Count; ++i)
+        {
+            GameObject game = frames[i].gameObject;
+            frames[i] = null;
+            Destroy(game);
+        }
+        GameObject startFrame = Instantiate(FramePrefabs[0], new Vector3(0f, 0f, 0f), Quaternion.identity);
+        frames[0] = startFrame.GetComponent<FrameMover>();
+        StartCoroutine(StartGameRoutine());
+    }
+
+    public void ResetNick()
+    {
+
     }
     public void ToMainMenu()
     {
 		PhotonNetwork.LeaveRoom ();
+        PhotonNetwork.LeaveLobby();
         SceneManager.LoadScene("MainMenu");
     }
 

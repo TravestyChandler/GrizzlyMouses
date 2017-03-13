@@ -11,7 +11,7 @@ public class SoundManager : MonoBehaviour {
 	void Awake () {
 	    if(Instance == null)
         {
-            Instance = null;
+            Instance = this;
 
         }
         else
@@ -26,8 +26,9 @@ public class SoundManager : MonoBehaviour {
         sfxDict = new Dictionary<string, AudioClip>();
         foreach (AudioClip aud in soundEffects)
         {
-            string name = aud.name;
-            sfxDict.Add(name, aud);
+            string audname = aud.name;
+            Debug.Log(audname);
+            sfxDict.Add(audname, aud);
         }
         GameObject musicObject = Instantiate(musicPrefab, Vector3.zero, Quaternion.identity);
     }
