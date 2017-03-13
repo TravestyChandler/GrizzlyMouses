@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour {
     public float previousSpeed = 0f;
 	public bool player1Ready = false;
 	public bool player2Ready = false;
-
+	public Vector3 NickStart;
     public enum GamePhase {
         Starting,
         Running,
@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
+		NickStart = GameObject.Find ("Player").transform.position;
         phase = GamePhase.Starting;
         if (instance == null) {
             instance = this;
@@ -152,6 +153,7 @@ public class GameManager : MonoBehaviour {
 
     }
 
+	[PunRPC]
     public void RPCRestartGame()
     {
         //Delete all frames, place new start frame, reset score, start countdown over
@@ -161,10 +163,16 @@ public class GameManager : MonoBehaviour {
             frames[i] = null;
             Destroy(game);
         }
+		frames.Clear ();
+		UIController.Instance.gameOver.Close (UIController.Instance.deathPanelTimer);
         GameObject startFrame = Instantiate(FramePrefabs[0], new Vector3(0f, 0f, 0f), Quaternion.identity);
-        frames[0] = startFrame.GetComponent<FrameMover>();
-        StartCoroutine(StartGameRoutine());
-    }
+		frames.Add(startFrame.GetComponent<FrameMover>());
+		UIController.Instance.distanceTraveled = 0f;
+		ResetNick ();
+		if (PhotonNetwork.isMasterClient) {
+			photView.RPC ("RPCStartGame", PhotonTargets.All);
+		}
+	}
 
     public void RestartGame()
     {
@@ -177,12 +185,13 @@ public class GameManager : MonoBehaviour {
         }
         GameObject startFrame = Instantiate(FramePrefabs[0], new Vector3(0f, 0f, 0f), Quaternion.identity);
         frames[0] = startFrame.GetComponent<FrameMover>();
+
         StartCoroutine(StartGameRoutine());
     }
 
     public void ResetNick()
     {
-
+		GameObject.Find ("Player").transform.position = NickStart;
     }
     public void ToMainMenu()
     {
