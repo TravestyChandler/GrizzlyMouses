@@ -22,7 +22,11 @@ public class BackgroundFrame : MonoBehaviour {
 
     public void Despawn()
     {
-        GameObject obj = GameObject.Instantiate(this.gameObject, new Vector3(100f, 0f, 0f), Quaternion.identity);
+        GameObject obj = GameObject.Instantiate(GameManager.instance.backgroundPrefab, new Vector3(100f, 0f, 0f), Quaternion.identity);
+        BackgroundFrame other = obj.GetComponent<BackgroundFrame>();
+        float dist = other.transform.position.x - other.startP.position.x;
+        other.transform.position = new Vector3(GameManager.instance.backgrounds[1].endP.position.x + dist, 0);
+        GameManager.instance.backgrounds.Remove(this);
         Destroy(this.gameObject);
     }
 }

@@ -8,13 +8,11 @@ public class RoomList : MonoBehaviour {
     public GameObject roomItemPrefab;
     public InputField UserNameField;
     public RectTransform rect;
+    public bool isOpen = true;
     // Use this for initialization
     public void SetupRoom(RoomInfo ri)
     {
-        foreach (RoomItem roomItem in contentPanel.GetComponentsInChildren<RoomItem>())
-        {
-            Destroy(roomItem.gameObject);
-        }
+
         if(ri.PlayerCount == 2)
         {
             return;
@@ -28,6 +26,13 @@ public class RoomList : MonoBehaviour {
         }
     }
 
+    public void EmptyRoomList()
+    {
+        foreach (RoomItem roomItem in contentPanel.GetComponentsInChildren<RoomItem>())
+        {
+            Destroy(roomItem.gameObject);
+        }
+    }
     public void CreateRoom()
     {
        
@@ -42,6 +47,7 @@ public class RoomList : MonoBehaviour {
 
     public void Close(float closeTime)
     {
+        isOpen = false;
         StartCoroutine(ClosePanel(closeTime));
     }
 

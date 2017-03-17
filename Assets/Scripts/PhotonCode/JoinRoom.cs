@@ -22,14 +22,26 @@ public class JoinRoom : MonoBehaviour {
 
     public void ShowRoomList()
     {
+        UIController.Instance.room.EmptyRoomList();
         RoomInfo[] ris = PhotonNetwork.GetRoomList();
-        UIController.Instance.RoomListPopUp();
+        if (UIController.Instance.room.isOpen)
+        {
+
+        }
+        else {
+            UIController.Instance.RoomListPopUp();
+        }
         if (ris.Length > 0)
         {
             foreach (RoomInfo room in PhotonNetwork.GetRoomList())
             {
                 Debug.Log(room.Name);
-                UIController.Instance.room.SetupRoom(room);
+                if (room.PlayerCount >= 2) { 
+
+                }
+                else {
+                    UIController.Instance.room.SetupRoom(room);
+                }
             }
         }
         else

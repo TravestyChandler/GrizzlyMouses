@@ -18,11 +18,12 @@ public class GameManager : MonoBehaviour {
     public GameObject NetworkObjects;
     public PhotonView photView;
     public float speedReduction = -0.5f;
-    public string[] frameNames;
     public float previousSpeed = 0f;
 	public bool player1Ready = false;
 	public bool player2Ready = false;
 	public Vector3 NickStart;
+    public List<BackgroundFrame> backgrounds;
+    public GameObject backgroundPrefab;
     public enum GamePhase {
         Starting,
         Running,
