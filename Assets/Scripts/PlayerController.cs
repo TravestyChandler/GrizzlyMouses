@@ -110,10 +110,10 @@ public class PlayerController : MonoBehaviour {
         {
             if (GameManager.instance.networkedGame)
             {
-                photonView.RPC("HitObstacle", PhotonTargets.All);
+                photonView.RPC("HitObstacle", PhotonTargets.All, col);
             }
             else {
-                HitObstacle();
+				NonNetworkHitObstacle ();
             }
         }
         else if (col.tag.Equals("deathbarrier"))
@@ -137,9 +137,16 @@ public class PlayerController : MonoBehaviour {
         
     }
 
+	public void NonNetworkHitObstacle()
+	{
+		StartCoroutine(DamageRoutine());
+	}
     [PunRPC]
-    public void HitObstacle()
+	public void HitObstacle(Collider2D col)
     {
+		if (PhotonNetwork.isMasterClient) {
+			col.GetComponent<PhotonView> ().RPC ("DestroyObstacle", PhotonTargets.All);
+		}
         StartCoroutine(DamageRoutine());
     }
 
