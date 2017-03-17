@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameOverPanel : MonoBehaviour {
-
+	public PhotonView phot;
     RectTransform rect;
 	// Use this for initialization
 	void Start () {
@@ -62,10 +62,15 @@ public class GameOverPanel : MonoBehaviour {
         GameManager.instance.photView.RPC("RPCRestartGame", PhotonTargets.All);
     }
 
+	[PunRPC]
+	public void RPCLoad(){
+		StartCoroutine (LoadMenu ());
+	}
+
     public void Load()
     {
         Close(UIController.Instance.deathPanelTimer);
-        StartCoroutine(LoadMenu());
+		phot.RPC ("RPCLoad", PhotonTargets.All);
     }
 
     IEnumerator LoadMenu()
