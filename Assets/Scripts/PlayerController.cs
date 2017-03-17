@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour {
     public bool canTravel = true;
     public Rigidbody2D rb;
     public float jumpVelocity;
+	public float gravityScale;
     public LayerMask groundLayers;
     public PhotonView photonView;
     public bool isDamaged = false;
@@ -26,7 +27,7 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
         rb = this.GetComponent<Rigidbody2D>();
         sp = this.GetComponent<SpriteRenderer>();
-
+		gravityScale = rb.gravityScale;
         photonView = PhotonView.Get(this);
 	}
 	
