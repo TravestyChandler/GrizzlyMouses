@@ -8,7 +8,7 @@ public class FrameMover : MonoBehaviour {
     public int frameUpdateCount = 0;
 	// Use this for initialization
 	void Start () {
-      frameUpdateTime = Random.Range(3, 5);
+      frameUpdateTime = Random.Range(30, 75);
 	}
 
     public void FramePlacement(FrameMover other)

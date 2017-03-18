@@ -35,7 +35,6 @@ public class JoinRoom : MonoBehaviour {
         {
             foreach (RoomInfo room in PhotonNetwork.GetRoomList())
             {
-                Debug.Log(room.Name);
                 if (room.PlayerCount >= 2) { 
 
                 }

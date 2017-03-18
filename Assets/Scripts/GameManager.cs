@@ -193,9 +193,15 @@ public class GameManager : MonoBehaviour {
     public void ResetNick()
     {
 		GameObject Nick = GameObject.Find ("Player");
-		Nick.transform.position = NickStart;
+        PlayerController player = Nick.GetComponent<PlayerController>();
+        if (player.inPresent)
+        {
+            player.TimeTravel();
+        }
+        Nick.transform.position = NickStart;
 		PlayerController np = Nick.GetComponent<PlayerController> ();
-		np.rb.gravityScale = np.gravityScale;
+
+        np.rb.gravityScale = np.gravityScale;
     }
     public void ToMainMenu()
     {

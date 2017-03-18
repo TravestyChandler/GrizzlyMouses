@@ -20,8 +20,10 @@ public class RoomList : MonoBehaviour {
         RoomItem ro = Instantiate(roomItemPrefab, contentPanel).GetComponent<RoomItem>();
         ro.GetComponent<RectTransform>().localScale = Vector3.one;
         ro.roomName.text = ri.Name;
+        Debug.Log(ri.CustomProperties.Count);
         if (ri.CustomProperties.ContainsKey("PlayerName"))
         {
+            Debug.Log("Found player name");
             ro.roomUser.text = ri.CustomProperties["PlayerName"].ToString();
         }
     }
