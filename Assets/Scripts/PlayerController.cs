@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour {
         canJump = false;
         Debug.Log("jumping");
         StartCoroutine(JumpRoutine());
-        SoundManager.Instance.PlaySFX("Jump", 100);
+        SoundManager.Instance.PlaySFX("jump", 100);
 	}
 
     public IEnumerator JumpRoutine()

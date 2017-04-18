@@ -12,7 +12,7 @@ public class RoomJoined : MonoBehaviour {
         {
             Debug.Log("in room");
             ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
-            hash.Add("PlayerName", UIController.Instance.room.UserNameField.text);
+            hash.Add("PlayerName", UIController.Instance.room.roomNameField.text);
             r.SetCustomProperties(hash);
             Debug.Log("Setup values");
         }

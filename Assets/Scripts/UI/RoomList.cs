@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class RoomList : MonoBehaviour {
     public RectTransform contentPanel;
     public GameObject roomItemPrefab;
-    public InputField UserNameField;
+    public InputField roomNameField;
     public RectTransform rect;
     public bool isOpen = true;
     // Use this for initialization
@@ -42,8 +42,8 @@ public class RoomList : MonoBehaviour {
         rop.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
         rop.MaxPlayers = 2;
         rop.IsVisible = true;
-        rop.CustomRoomProperties.Add("PlayerName", UserNameField.text);
-        PhotonNetwork.CreateRoom(null, rop, null);
+        rop.CustomRoomProperties.Add("PlayerName", roomNameField.text);
+        PhotonNetwork.CreateRoom(roomNameField.text, rop, null);
         Close(UIController.Instance.roomListPanelTimer);
     }
 
