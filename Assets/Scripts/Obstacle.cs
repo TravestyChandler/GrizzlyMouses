@@ -21,8 +21,12 @@ public class Obstacle : MonoBehaviour {
 	public void OnCollisionEnter2D(Collision2D col){
 		if (!destroying) {
 			if (col.gameObject.tag.Equals ("Player")) {
-				phot.RPC ("DestroyObstacle", PhotonTargets.All, null);
-				destroying = true;
+                if (PhotonNetwork.isMasterClient)
+                {
+                    Debug.Log("Destroying object");
+                    phot.RPC("DestroyObstacle", PhotonTargets.All, null);
+                    destroying = true;
+                }
 			}
 		}
 	}
