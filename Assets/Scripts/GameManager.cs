@@ -258,7 +258,7 @@ public class GameManager : MonoBehaviour {
                     if (frames[i].frameUpdateCount >= frames[i].frameUpdateTime)
                     {
                         frames[i].frameUpdateCount = 0;
-                        //photView.RPC("SetFrameX", PhotonTargets.Others, newX, i);
+                        photView.RPC("SetFrameX", PhotonTargets.Others, newX, i);
                     }
                     else
                     {
