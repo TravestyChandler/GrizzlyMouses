@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
     public Vector2 BackStartVector, backEndVector;
     public float CurrentSpeed = 1f;
     public float startSpeed, maxSpeed;
+    public float minSpeed = 5f;
     public float speedIncreasePerSec;
     public static GameManager instance;
     public List<GameObject> FramePrefabs;
@@ -56,6 +57,13 @@ public class GameManager : MonoBehaviour {
     public void ReduceSpeed()
     {
         CurrentSpeed -= speedReduction;
+        if (PhotonNetwork.isMasterClient)
+        {
+            if (CurrentSpeed < minSpeed)
+            {
+                PlayerDeath();
+            }
+        }
     }
 
 	public void PlayerReady(){
@@ -123,7 +131,6 @@ public class GameManager : MonoBehaviour {
                     int val = UnityEngine.Random.Range(0, FramePrefabs.Count);
                     int id = PhotonNetwork.AllocateViewID();
                     photView.RPC("RPCSpawn", PhotonTargets.All, val, id);
-                    //photView.RPC("RPCSpawn", PhotonTargets.All, val);
                 }
             }
             else
@@ -231,6 +238,7 @@ public class GameManager : MonoBehaviour {
         }
         else if (phase == GamePhase.Running)
         {
+            
             if (CurrentSpeed > maxSpeed)
             {
                 previousSpeed = CurrentSpeed;
