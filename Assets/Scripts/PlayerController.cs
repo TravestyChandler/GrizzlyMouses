@@ -106,17 +106,8 @@ public class PlayerController : MonoBehaviour {
 
     public void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.tag.Equals("obstacle"))
-        {
-            if (GameManager.instance.networkedGame)
-            {
-                photonView.RPC("HitObstacle", PhotonTargets.All, col);
-            }
-            else {
-				NonNetworkHitObstacle ();
-            }
-        }
-        else if (col.tag.Equals("deathbarrier"))
+        
+         if (col.tag.Equals("deathbarrier"))
         {
             if (GameManager.instance.networkedGame)
             {
@@ -127,7 +118,23 @@ public class PlayerController : MonoBehaviour {
             }
         }
     }
-
+    public void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.collider.tag.Equals("obstacle"))
+        {
+            if (GameManager.instance.networkedGame)
+            {
+                if (PhotonNetwork.isMasterClient)
+                {
+                    col.collider.GetComponent<PhotonView>().RPC("DestroyObstacle", PhotonTargets.All);
+                    photonView.RPC("HitObstacle", PhotonTargets.All);
+                }
+            }
+            else {
+                NonNetworkHitObstacle();
+            }
+        }
+    }
     [PunRPC]
     public void Death()
     {
@@ -142,17 +149,16 @@ public class PlayerController : MonoBehaviour {
 		StartCoroutine(DamageRoutine());
 	}
     [PunRPC]
-	public void HitObstacle(Collider2D col)
+	public void HitObstacle()
     {
-		if (PhotonNetwork.isMasterClient) {
-			col.GetComponent<PhotonView> ().RPC ("DestroyObstacle", PhotonTargets.All);
-		}
+		
         StartCoroutine(DamageRoutine());
     }
 
     public IEnumerator DamageRoutine()
     {
         Debug.Log("Character Damaged");
+        GameManager.instance.photView.RPC("ReduceSpeed", PhotonTargets.All);
         float totalTimer = 0f;
         while (totalTimer < DamageTimer)
         {

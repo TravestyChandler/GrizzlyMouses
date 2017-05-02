@@ -18,18 +18,6 @@ public class Obstacle : MonoBehaviour {
 
 	public bool destroying = false;
 
-	public void OnCollisionEnter2D(Collision2D col){
-		if (!destroying) {
-			if (col.gameObject.tag.Equals ("Player")) {
-                if (PhotonNetwork.isMasterClient)
-                {
-                    Debug.Log("Destroying object");
-                    phot.RPC("DestroyObstacle", PhotonTargets.All, null);
-                    destroying = true;
-                }
-			}
-		}
-	}
 	[PunRPC]
 	public void DestroyObstacle(){
 		foreach(Collider2D col in this.GetComponents<Collider2D>()){

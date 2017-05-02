@@ -52,6 +52,11 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    [PunRPC]
+    public void ReduceSpeed()
+    {
+        CurrentSpeed -= speedReduction;
+    }
 
 	public void PlayerReady(){
 		if (PhotonNetwork.isMasterClient) {
