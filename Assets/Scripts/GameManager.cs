@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour {
         CurrentSpeed -= speedReduction;
         if (PhotonNetwork.isMasterClient)
         {
-            if (CurrentSpeed < minSpeed)
+            if (CurrentSpeed > minSpeed)
             {
                 PlayerDeath();
             }

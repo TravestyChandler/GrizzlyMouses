@@ -12,7 +12,8 @@ public class PlayerController : MonoBehaviour {
     public float travelDelay = 0.25f;
     public float groundedDist = 0.5f;
     public float distToOtherTime = 10f;
-    public bool canJump;
+	public bool canJump = true;
+	public bool isGrounded = true;
     public bool inPresent = true;
     public bool canTravel = true;
     public Rigidbody2D rb;
@@ -23,6 +24,8 @@ public class PlayerController : MonoBehaviour {
     public bool isDamaged = false;
     public float DamageTimer = 1f;
     public SpriteRenderer sp;
+	public Transform circleCastLocation;
+	public float circleCastRadius = 0.5f;
 	// Use this for initialization
 	void Start () {
         rb = this.GetComponent<Rigidbody2D>();
@@ -33,7 +36,9 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (GameManager.instance.phase == GameManager.GamePhase.Running && IsGrounded() && canJump) {
+		//circleoverlap for canJump boolean
+		isGrounded = IsGrounded();
+		if (GameManager.instance.phase == GameManager.GamePhase.Running && isGrounded && canJump) {
             if (GameManager.instance.networkedGame && PhotonNetwork.playerName == "1")
             {
                 if (Input.GetKeyDown(JumpButton))
@@ -87,13 +92,15 @@ public class PlayerController : MonoBehaviour {
             yield return null;
         }
         canJump = true;
+
     }
 
 
 	public bool IsGrounded(){
-        Ray2D ray2D = new Ray2D(transform.position, Vector2.down);
-        RaycastHit2D hit2D = Physics2D.Raycast(transform.position, Vector2.down, groundedDist,groundLayers);
-        if (hit2D.collider != null && hit2D.collider.name != this.name)
+		Collider2D col = Physics2D.OverlapCircle(circleCastLocation.position, circleCastRadius, groundLayers);
+        //Ray2D ray2D = new Ray2D(transform.position, Vector2.down);
+        //RaycastHit2D hit2D = Physics2D.Raycast(transform.position, Vector2.down, groundedDist,groundLayers);
+		if (col != null)
         {
             return true;
         }
@@ -122,19 +129,38 @@ public class PlayerController : MonoBehaviour {
     {
         if (col.collider.tag.Equals("obstacle"))
         {
-            if (GameManager.instance.networkedGame)
-            {
-                if (PhotonNetwork.isMasterClient)
-                {
-                    col.collider.GetComponent<PhotonView>().RPC("DestroyObstacle", PhotonTargets.All);
-                    photonView.RPC("HitObstacle", PhotonTargets.All);
-                }
-            }
-            else {
-                NonNetworkHitObstacle();
-            }
+			//Compare y values, if hit point more than 75% height of other object
+			//Use grounded position to compare with player's 'feet'
+			float obstacleCompareValue = col.collider.bounds.center.y + (col.collider.bounds.extents.y * 0.5f);
+			float playerY = circleCastLocation.position.y;
+			//Debug.Log ("Player Y = " + playerY + "   Obstacle Y = " + obstacleCompareValue);
+			if (playerY < obstacleCompareValue) {
+				if (GameManager.instance.networkedGame) {
+					if (PhotonNetwork.isMasterClient) {
+						col.collider.GetComponent<PhotonView> ().RPC ("DestroyObstacle", PhotonTargets.All);
+						photonView.RPC ("HitObstacle", PhotonTargets.All);
+					}
+				} else {
+					NonNetworkHitObstacle ();
+				}
+			} else {
+				if (PhotonNetwork.isMasterClient) {
+					//Manually place player above obstacle
+					float obstacleMaxY = col.collider.bounds.center.y + col.collider.bounds.extents.y;
+					photonView.RPC ("SetOntoObstacle", PhotonTargets.All, obstacleMaxY);
+				}
+			}
         }
     }
+
+	[PunRPC]
+	public void SetOntoObstacle(float obstacleMaxY){
+		float moveDistance = GetComponent<BoxCollider2D>().bounds.size.y/2f;
+		float newY = obstacleMaxY + moveDistance;
+		//Debug.Log ("ObstacleMaxY = " + obstacleMaxY + "  OldY = " + this.transform.position.y + " New Y = " + newY + "    moveDistance = " + moveDistance);
+		this.transform.position = new Vector2 (this.transform.position.x, newY);
+	}
+
     [PunRPC]
     public void Death()
     {
