@@ -24,7 +24,10 @@ public class GameManager : MonoBehaviour {
 	public bool player2Ready = false;
 	public Vector3 NickStart;
     public List<BackgroundFrame> backgrounds;
+    public List<MidBackgroundFrame> midBackgrounds;
     public GameObject backgroundPrefab;
+    public GameObject midBackgroundPrefab;
+
     public enum GamePhase {
         Starting,
         Running,
