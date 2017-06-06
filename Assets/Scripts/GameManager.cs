@@ -57,6 +57,21 @@ public class GameManager : MonoBehaviour {
     }
 
     [PunRPC]
+    public void ShiftPlayerBack()
+    {
+        Vector3 pos = transform.position;
+        pos.x -= speedReduction;
+        transform.position = pos;
+        if (PhotonNetwork.isMasterClient)
+        {
+            if(transform.position.x < minSpeed)
+            {
+                PlayerDeath();
+            }
+        }
+    }
+
+    [PunRPC]
     public void ReduceSpeed()
     {
         CurrentSpeed -= speedReduction;

@@ -29,6 +29,7 @@ public class RoomJoined : MonoBehaviour {
             PhotonNetwork.playerName = "2";
             PhotonView photonView = PhotonView.Get(GameManager.instance);
             photonView.RPC("RPCStartGame", PhotonTargets.All);
+            CameraController.Instance.TurnOnP2UI();
         }
     }
 }

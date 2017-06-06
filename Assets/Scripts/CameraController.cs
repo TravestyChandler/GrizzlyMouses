@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
-	public Camera PastCamera, PresentCamera;
+	public Camera PastCamera, PresentCamera, Player2UI;
 	public static CameraController Instance;
 
 	void Awake(){
@@ -26,6 +26,10 @@ public class CameraController : MonoBehaviour {
 		
 	}
 
+    public void TurnOnP2UI()
+    {
+        Player2UI.gameObject.SetActive(true);
+    }
 
 
 	public void SwapCameras(bool present){
