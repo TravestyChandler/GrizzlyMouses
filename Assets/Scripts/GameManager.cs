@@ -20,6 +20,10 @@ public class GameManager : MonoBehaviour {
     public PhotonView photView;
     public float speedReduction = -0.5f;
     public float previousSpeed = 0f;
+    public float minPlayerX = -15f;
+    public float xPositionIncrease = 1f;
+    public float xPositionLoss = 5f;
+    public float maxPlayerX = -6f;
 	public bool player1Ready = false;
 	public bool player2Ready = false;
 	public Vector3 NickStart;
@@ -59,12 +63,12 @@ public class GameManager : MonoBehaviour {
     [PunRPC]
     public void ShiftPlayerBack()
     {
-        Vector3 pos = transform.position;
-        pos.x -= speedReduction;
-        transform.position = pos;
+        Vector3 pos = PlayerController.Instance.transform.position;
+        pos.x -= xPositionLoss;
+        PlayerController.Instance.transform.position = pos;
         if (PhotonNetwork.isMasterClient)
         {
-            if(transform.position.x < minSpeed)
+            if (PlayerController.Instance.transform.position.x < minPlayerX)
             {
                 PlayerDeath();
             }
@@ -256,7 +260,7 @@ public class GameManager : MonoBehaviour {
         }
         else if (phase == GamePhase.Running)
         {
-            
+            /*
             if (CurrentSpeed > maxSpeed)
             {
                 previousSpeed = CurrentSpeed;
@@ -266,6 +270,20 @@ public class GameManager : MonoBehaviour {
             {
                 previousSpeed = CurrentSpeed;
                 CurrentSpeed = maxSpeed;
+            }
+            //No longer increasing players speed, instead increase their X position value
+            */
+            if (this.transform.position.x < maxPlayerX)
+            {
+                Vector3 pos = this.transform.position;
+                pos.x += xPositionIncrease;
+                this.transform.position = pos;
+            }
+            else if (this.transform.position.x > maxPlayerX)
+            {
+                Vector3 pos = this.transform.position;
+                pos.x = maxPlayerX;
+                this.transform.position = pos;
             }
         }
         if (phase == GamePhase.GameOver)

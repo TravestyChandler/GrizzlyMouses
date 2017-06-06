@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
+    public static PlayerController Instance;
 
 	public KeyCode JumpButton;
     public KeyCode TravelButton;
@@ -28,6 +29,15 @@ public class PlayerController : MonoBehaviour {
 	public float circleCastRadius = 0.5f;
 	// Use this for initialization
 	void Start () {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this);
+            return;
+        }
         rb = this.GetComponent<Rigidbody2D>();
         sp = this.GetComponent<SpriteRenderer>();
 		gravityScale = rb.gravityScale;
@@ -184,7 +194,7 @@ public class PlayerController : MonoBehaviour {
     public IEnumerator DamageRoutine()
     {
         Debug.Log("Character Damaged");
-        GameManager.instance.photView.RPC("ReduceSpeed", PhotonTargets.All);
+        GameManager.instance.photView.RPC("ShiftPlayerBack", PhotonTargets.All);
         float totalTimer = 0f;
         while (totalTimer < DamageTimer)
         {
