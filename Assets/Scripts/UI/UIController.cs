@@ -16,6 +16,9 @@ public class UIController : MonoBehaviour {
     public float deathPanelTimer = 0.25f;
     public float roomListPanelTimer = 0.25f;
     public float distanceTraveled = 0f;
+
+	public Text ResourcesText;
+
 	// Use this for initialization
 	void Awake () {
 		if(Instance == null)

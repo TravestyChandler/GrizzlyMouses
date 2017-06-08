@@ -64,7 +64,8 @@ public class GameManager : MonoBehaviour {
 
 	[PunRPC]
 	public void IncreaseResources(){
-
+		resourcesCollected++;
+		UIController.Instance.ResourcesText.text = "x" + resourcesCollected.ToString ();
 	}
 
     [PunRPC]
@@ -227,7 +228,7 @@ public class GameManager : MonoBehaviour {
         }
         GameObject startFrame = Instantiate(FramePrefabs[0], new Vector3(0f, 0f, 0f), Quaternion.identity);
         frames[0] = startFrame.GetComponent<FrameMover>();
-
+		UIController.Instance.ResourcesText.text = "x0";
         StartCoroutine(StartGameRoutine());
     }
 
@@ -383,7 +384,7 @@ public class GameManager : MonoBehaviour {
 
         
         Debug.Log("Spawning frames: " + value);
-        GameObject frameObj = Instantiate(FramePrefabs[value], Vector3.one * 100f, Quaternion.identity);
+       GameObject frameObj = Instantiate(FramePrefabs[value], Vector3.one * 100f, Quaternion.identity);
         PhotonView nviews = frameObj.GetComponent<PhotonView>();
         nviews.viewID = photonID;
         FrameMover frame = frameObj.GetComponent<FrameMover>();

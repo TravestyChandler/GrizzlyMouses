@@ -135,8 +135,12 @@ public class PlayerController : MonoBehaviour {
             }
         }
 		if (col.tag.Equals ("resource")) {
+			//Debug.Log ("Hit Resource");
 			if (PhotonNetwork.isMasterClient) {
-				if (col.GetComponent<Collectible> ().canCollect) {
+				Collectible collect = col.GetComponent<Collectible> ();
+				if (collect.canCollect) {
+					collect.phot.RPC ("Collected", PhotonTargets.All);
+					Debug.Log ("collecting resource");
 					GameManager.instance.photView.RPC ("IncreaseResources", PhotonTargets.All);
 				}
 			}
