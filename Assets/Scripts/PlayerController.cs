@@ -134,7 +134,16 @@ public class PlayerController : MonoBehaviour {
                 Death();
             }
         }
+		if (col.tag.Equals ("resource")) {
+			if (PhotonNetwork.isMasterClient) {
+				if (col.GetComponent<Collectible> ().canCollect) {
+					GameManager.instance.photView.RPC ("IncreaseResources", PhotonTargets.All);
+				}
+			}
+		}
     }
+		
+
     public void OnCollisionEnter2D(Collision2D col)
     {
         if (col.collider.tag.Equals("obstacle"))

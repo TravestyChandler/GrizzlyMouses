@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour {
     public GameObject backgroundPrefab;
     public GameObject midBackgroundPrefab;
 
+	private int resourcesCollected = 0;
+
     public enum GamePhase {
         Starting,
         Running,
@@ -59,6 +61,11 @@ public class GameManager : MonoBehaviour {
         }
 
     }
+
+	[PunRPC]
+	public void IncreaseResources(){
+
+	}
 
     [PunRPC]
     public void ShiftPlayerBack()
