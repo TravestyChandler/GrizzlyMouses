@@ -17,6 +17,7 @@ public class UIController : MonoBehaviour {
     public float roomListPanelTimer = 0.25f;
     public float distanceTraveled = 0f;
 
+	public RectTransform PausePanel;
 	public Text ResourcesText;
 
 	// Use this for initialization
@@ -49,7 +50,7 @@ public class UIController : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         distanceTraveled += (GameManager.instance.CurrentSpeed * Time.deltaTime);
-        distTraveled.text = (Mathf.Abs((int)distanceTraveled)).ToString() + " meters";
+        distTraveled.text = (Mathf.Abs((int)distanceTraveled)).ToString() + " m";
 	}
 
     public void PauseGame()
@@ -70,4 +71,25 @@ public class UIController : MonoBehaviour {
 		ReadyUpButton.enabled = false;
 	}
     
+	public void TriggerPauseMenu(bool open){
+		float startScale = 0f;
+		float endScale = 1f;
+		if (!open) {
+			startScale = 1f;
+			endScale = 0f;
+		}
+		StartCoroutine (scaleMenu (PausePanel, startScale, endScale));
+	}
+
+	public IEnumerator scaleMenu(RectTransform rect, float start, float end){
+		yield return null;
+		float timer = 0f;
+		while (timer < 0.25f) {
+			timer += Time.unscaledDeltaTime;
+			float val = Mathf.Lerp (start, end, timer / 0.25f);
+			rect.localScale = Vector2.one * val;
+			yield return null;
+		}
+		rect.localScale = Vector2.one * end;
+	}
 }

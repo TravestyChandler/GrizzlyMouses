@@ -351,12 +351,15 @@ public class GameManager : MonoBehaviour {
     {
         if (phase == GamePhase.Paused)
         {
+			UIController.Instance.TriggerPauseMenu (false);
             phase = GamePhase.Running;
-            CurrentSpeed = previousSpeed;
+			CurrentSpeed = maxSpeed;
         }
         else if (phase == GamePhase.Running)
         {
             phase = GamePhase.Paused;
+			UIController.Instance.TriggerPauseMenu (true);
+
         }
         else
         {
