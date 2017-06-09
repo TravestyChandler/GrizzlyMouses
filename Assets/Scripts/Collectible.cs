@@ -11,7 +11,7 @@ public class Collectible : MonoBehaviour {
 	private bool viewIdSet = false;
 	public PhotonView phot;
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		phot = this.GetComponent<PhotonView> ();
 
 	}
@@ -23,23 +23,26 @@ public class Collectible : MonoBehaviour {
 
 	public void OnTriggerEnter2D(Collider2D col){
 		if (col.tag.Equals ("Player") && canCollect) {
+			
 		}
 	}
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
-		if (!viewIdSet) {
-			phot.viewID = PhotonNetwork.AllocateViewID ();
-			viewIdSet = true;
-		} else {
-			return;
-		}
+
+	}
+
+	[PunRPC]
+	public void SetID(int val){
+		phot.viewID = val;
 	}
 
 	[PunRPC]
 	public void Collected(){
 		canCollect = false;
 		SoundManager.Instance.PlaySFX (coinSoundEffect, 100);
+		GameObject game = Instantiate (particleEffect);
+		GameManager.instance.UnAllocateViewIDAfterTime (phot.viewID, timeToDestroy);
 		Destroy (this.gameObject, timeToDestroy);
-		Destroy (Instantiate (particleEffect, this.transform), particleDestroyTime);
+		Destroy (game, particleDestroyTime);
 	}
 }

@@ -217,6 +217,16 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+
+	public void UnAllocateViewIDAfterTime(int viewID, float time){
+		StartCoroutine(UnallocatedID(viewID, time));
+	}
+
+	public IEnumerator UnallocatedID (int viewID, float time){
+		yield return new WaitForSeconds (time);
+		yield return null;
+		PhotonNetwork.UnAllocateViewID (viewID);
+	}
     public void RestartGame()
     {
         //Delete all frames, place new start frame, reset score, start countdown over
@@ -268,19 +278,6 @@ public class GameManager : MonoBehaviour {
         }
         else if (phase == GamePhase.Running)
         {
-            /*
-            if (CurrentSpeed > maxSpeed)
-            {
-                previousSpeed = CurrentSpeed;
-                CurrentSpeed -= (speedIncreasePerSec * Time.deltaTime);
-            }
-            else if (CurrentSpeed < maxSpeed)
-            {
-                previousSpeed = CurrentSpeed;
-                CurrentSpeed = maxSpeed;
-            }
-            //No longer increasing players speed, instead increase their X position value
-            */
             if (this.transform.position.x < maxPlayerX)
             {
                 Vector3 pos = this.transform.position;
@@ -342,6 +339,7 @@ public class GameManager : MonoBehaviour {
             photView.RPC("RPCSpawn", PhotonTargets.All, val, id);
         }
         frames.Remove(frame);
+		UnAllocateViewIDAfterTime( frame.GetComponent<PhotonView> ().viewID, 0.1f);
         Destroy(frame.gameObject);
     }
 
@@ -387,7 +385,7 @@ public class GameManager : MonoBehaviour {
 
         
         Debug.Log("Spawning frames: " + value);
-       GameObject frameObj = Instantiate(FramePrefabs[value], Vector3.one * 100f, Quaternion.identity);
+       	GameObject frameObj = Instantiate(FramePrefabs[value], Vector3.one * 100f, Quaternion.identity);
         PhotonView nviews = frameObj.GetComponent<PhotonView>();
         nviews.viewID = photonID;
         FrameMover frame = frameObj.GetComponent<FrameMover>();

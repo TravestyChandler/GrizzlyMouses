@@ -6,9 +6,14 @@ public class FrameMover : MonoBehaviour {
     public Transform start, end;
     public int frameUpdateTime = 1;
     public int frameUpdateCount = 0;
+	public Collectible[] collectibles;
 	// Use this for initialization
 	void Start () {
       frameUpdateTime = Random.Range(30, 75);
+		foreach (Collectible c in collectibles) {
+			int val = PhotonNetwork.AllocateViewID ();
+			c.phot.RPC ("SetID", PhotonTargets.All, val);
+		}
 	}
 
     public void FramePlacement(FrameMover other)
