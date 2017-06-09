@@ -7,12 +7,17 @@ public class FrameMover : MonoBehaviour {
     public int frameUpdateTime = 1;
     public int frameUpdateCount = 0;
 	public Collectible[] collectibles;
+	public Obstacle[] obstacles;
 	// Use this for initialization
 	void Start () {
       frameUpdateTime = Random.Range(30, 75);
 		foreach (Collectible c in collectibles) {
 			int val = PhotonNetwork.AllocateViewID ();
 			c.phot.RPC ("SetID", PhotonTargets.All, val);
+		}
+		foreach (Obstacle o in obstacles) {
+			int val = PhotonNetwork.AllocateViewID ();
+			o.phot.RPC ("SetID", PhotonTargets.All, val);
 		}
 	}
 

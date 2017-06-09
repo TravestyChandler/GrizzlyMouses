@@ -197,13 +197,14 @@ public class GameManager : MonoBehaviour {
     }
 
 	[PunRPC]
-    public void RPCRestartGame()
+	public void RPCRestartGame(int firstID)
     {
         //Delete all frames, place new start frame, reset score, start countdown over
         for (int i = 0; i < frames.Count; ++i)
         {
             GameObject game = frames[i].gameObject;
             frames[i] = null;
+			UnAllocateViewIDAfterTime( game.GetComponent<PhotonView> ().viewID, 0.1f);
             Destroy(game);
         }
 		frames.Clear ();

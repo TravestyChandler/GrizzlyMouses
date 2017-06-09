@@ -59,7 +59,8 @@ public class GameOverPanel : MonoBehaviour {
     IEnumerator RestartGame()
     {
         yield return new WaitForSeconds(UIController.Instance.deathPanelTimer);
-        GameManager.instance.photView.RPC("RPCRestartGame", PhotonTargets.All);
+		int val = PhotonNetwork.AllocateViewID ();
+        GameManager.instance.photView.RPC("RPCRestartGame", PhotonTargets.All, val);
     }
 
 	[PunRPC]
