@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour {
     public Vector2 StartVector, EndVector;
     public Vector2 BackStartVector, backEndVector;
     public float CurrentSpeed = 1f;
+    public float SuperSpeed = 25f;
     public float startSpeed, maxSpeed;
     public float minSpeed = 5f;
     public float speedIncreasePerSec;
@@ -32,8 +33,8 @@ public class GameManager : MonoBehaviour {
     public List<MidBackgroundFrame> midBackgrounds;
     public GameObject backgroundPrefab;
     public GameObject midBackgroundPrefab;
-
-	private int resourcesCollected = 0;
+    public float powerUpTimer = 5f;
+	public int resourcesCollected = 0;
 
     public enum GamePhase {
         Starting,
@@ -42,6 +43,8 @@ public class GameManager : MonoBehaviour {
         Paused,
         Invalid
     }
+
+    
 
     // Use this for initialization
     void Start() {
@@ -68,6 +71,28 @@ public class GameManager : MonoBehaviour {
 		resourcesCollected++;
 		UIController.Instance.ResourcesText.text = "x" + resourcesCollected.ToString ();
 	}
+
+    public void PowerUpTimer()
+    {
+        StartCoroutine(powerTimer());
+    }
+
+    public IEnumerator powerTimer()
+    {
+        float timer = 0f;
+        while(timer < powerUpTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        PlayerController.Instance.photonView.RPC("TurnOffPowerUps", PhotonTargets.All);
+    }
+
+    [PunRPC]
+    public void UsePowerUp(int type)
+    {
+        PlayerController.Instance.UsePowerUp(type);
+    }
 
     [PunRPC]
     public void ShiftPlayerBack()
@@ -406,12 +431,4 @@ public class GameManager : MonoBehaviour {
     }
 
 
-	public void PlayerImpact(){
-		//reduce game speed and delay before player can be hit again(maybe handle the second part in the player controller
-
-	}
-
-	public void TimeTravelPlayer(){
-
-	}
 }

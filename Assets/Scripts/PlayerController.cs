@@ -7,6 +7,14 @@ public class PlayerController : MonoBehaviour {
 
     public static PlayerController Instance;
 
+    public enum PlayerStatus
+    {
+        Normal,
+        SuperJump,
+        Invincibility,
+        SuperSpeed
+    }
+
 	public KeyCode JumpButton;
     public KeyCode TravelButton;
     public float jumpDelay = 0.25f;
@@ -19,6 +27,7 @@ public class PlayerController : MonoBehaviour {
     public bool canTravel = true;
     public Rigidbody2D rb;
     public float jumpVelocity;
+    public float superJumpVelocity;
 	public float gravityScale;
     public LayerMask groundLayers;
     public PhotonView photonView;
@@ -27,6 +36,8 @@ public class PlayerController : MonoBehaviour {
     public SpriteRenderer sp;
 	public Transform circleCastLocation;
 	public float circleCastRadius = 0.5f;
+    public PlayerStatus state = PlayerStatus.Normal;
+
 	// Use this for initialization
 	void Start () {
         if(Instance == null)
@@ -81,12 +92,95 @@ public class PlayerController : MonoBehaviour {
                 }
             }
         }
+        if(PhotonNetwork.playerName == "2")
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                if(GameManager.instance.resourcesCollected > 5)
+                {
+                    GameManager.instance.photView.RPC("UsePowerUp", PhotonTargets.All, 1);
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                if(GameManager.instance.resourcesCollected > 10)
+                {
+                    GameManager.instance.photView.RPC("UsePowerUp", PhotonTargets.All, 2);
 
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                if(GameManager.instance.resourcesCollected > 15)
+                {
+                    GameManager.instance.photView.RPC("UsePowerUp", PhotonTargets.All, 3);
+
+                }
+            }
+        }
+    }
+
+
+    public void UsePowerUp(int type)
+    {
+        if(state != PlayerStatus.Normal)
+        {
+            TurnOffPowerUps();
+        }
+        if (type == 1)
+        {
+            //Super jump
+            state = PlayerController.PlayerStatus.SuperJump;
+            GameManager.instance.resourcesCollected -= 5;
+        }
+        if (type == 2)
+        {
+            //Invincibility
+            state = PlayerController.PlayerStatus.Invincibility;
+            rb.gravityScale = 0;
+            GameManager.instance.resourcesCollected -= 10;
+        }
+        if (type == 3)
+        {
+            //Super Speed
+            state = PlayerController.PlayerStatus.SuperSpeed;
+            GameManager.instance.CurrentSpeed = GameManager.instance.SuperSpeed;
+            GameManager.instance.resourcesCollected -= 15;
+        }
+        if (PhotonNetwork.isMasterClient)
+        {
+            GameManager.instance.PowerUpTimer();
+        }
+    }
+
+    [PunRPC]
+    public void TurnOffPowerUps()
+    {
+        if(state == PlayerStatus.SuperJump)
+        {
+
+        }
+        if(state == PlayerStatus.Invincibility)
+        {
+            rb.gravityScale = gravityScale;
+        }
+        if(state == PlayerStatus.SuperSpeed)
+        {
+            GameManager.instance.CurrentSpeed = GameManager.instance.maxSpeed;
+        }
+        state = PlayerStatus.Normal;
     }
 
     [PunRPC]
 	public void Jump(){
-        rb.velocity += new Vector2(0f, jumpVelocity);
+        if(state == PlayerStatus.SuperJump)
+        {
+            rb.velocity += new Vector2(0f, jumpVelocity);
+        }
+        else
+        {
+            rb.velocity += new Vector2(0f, jumpVelocity);
+        }
         canJump = false;
         //Debug.Log("jumping");
         StartCoroutine(JumpRoutine());
