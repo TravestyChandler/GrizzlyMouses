@@ -175,11 +175,11 @@ public class PlayerController : MonoBehaviour {
 	public void Jump(){
         if(state == PlayerStatus.SuperJump)
         {
-            rb.velocity += new Vector2(0f, jumpVelocity);
+            rb.velocity = new Vector2(0f, superJumpVelocity);
         }
         else
         {
-            rb.velocity += new Vector2(0f, jumpVelocity);
+            rb.velocity = new Vector2(0f, jumpVelocity);
         }
         canJump = false;
         //Debug.Log("jumping");
