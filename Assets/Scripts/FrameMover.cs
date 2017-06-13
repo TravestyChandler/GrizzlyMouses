@@ -8,17 +8,11 @@ public class FrameMover : MonoBehaviour {
     public int frameUpdateCount = 0;
 	public Collectible[] collectibles;
 	public Obstacle[] obstacles;
+    public bool viewIdSet = false;
 	// Use this for initialization
 	void Start () {
       frameUpdateTime = Random.Range(30, 75);
-		foreach (Collectible c in collectibles) {
-			int val = PhotonNetwork.AllocateViewID ();
-			c.phot.RPC ("SetID", PhotonTargets.All, val);
-		}
-		foreach (Obstacle o in obstacles) {
-			int val = PhotonNetwork.AllocateViewID ();
-			o.phot.RPC ("SetID", PhotonTargets.All, val);
-		}
+        
 	}
 
     public void FramePlacement(FrameMover other)
@@ -38,6 +32,41 @@ public class FrameMover : MonoBehaviour {
         {
             
         }
+        if (GameManager.instance.inRoom && !viewIdSet && PhotonNetwork.isMasterClient)
+        {
+            viewIdSet = true;
+            for(int i = 0; i < collectibles.Length; i++)
+            {
+                int val = PhotonNetwork.AllocateViewID();
+                if(val == 0)
+                {
+                    Debug.LogError("AllocateViewID came back with 0, illegal ID for: " + collectibles[i].gameObject.name);
+                }
+                this.GetComponent<PhotonView>().RPC("SetCollectibleID", PhotonTargets.AllBuffered, val, i);
+
+            }
+            for (int i = 0; i < obstacles.Length; i++)
+            {
+                int val = PhotonNetwork.AllocateViewID();
+                if (val == 0)
+                {
+                    Debug.LogError("AllocateViewID came back with 0, illegal ID for: " + obstacles[i].gameObject.name);
+                }
+                this.GetComponent<PhotonView>().RPC("SetObstacleID", PhotonTargets.AllBuffered, val, i);
+            }
+        }
+    }
+
+    [PunRPC]
+    public void SetObstacleID(int val, int arrayVal)
+    {
+        obstacles[arrayVal].phot.viewID = val;
+    }
+
+    [PunRPC]
+    public void SetCollectibleID(int val, int arrayVal)
+    {
+        collectibles[arrayVal].phot.viewID = val;
     }
 
     public void Despawn()

@@ -3341,7 +3341,7 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
 
     internal protected void RequestOwnership(int viewID, int fromOwner)
     {
-        Debug.Log("RequestOwnership(): " + viewID + " from: " + fromOwner + " Time: " + Environment.TickCount % 1000);
+        //Debug.Log("RequestOwnership(): " + viewID + " from: " + fromOwner + " Time: " + Environment.TickCount % 1000);
         //PhotonNetwork.networkingPeer.OpRaiseEvent(PunEvent.OwnershipRequest, true, new int[] { viewID, fromOwner }, 0, EventCaching.DoNotCache, null, ReceiverGroup.All, 0);
         this.OpRaiseEvent(PunEvent.OwnershipRequest, new int[] {viewID, fromOwner}, true, new RaiseEventOptions() { Receivers = ReceiverGroup.All });   // All sends to all via server (including self)
     }

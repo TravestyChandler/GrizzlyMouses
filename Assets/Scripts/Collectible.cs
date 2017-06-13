@@ -8,12 +8,10 @@ public class Collectible : MonoBehaviour {
 	public float particleDestroyTime = 0.5f;
 	public bool canCollect = true;
 	public string coinSoundEffect;
-	private bool viewIdSet = false;
 	public PhotonView phot;
 	// Use this for initialization
 	void Awake () {
 		phot = this.GetComponent<PhotonView> ();
-
 	}
 	
 	// Update is called once per frame
@@ -33,7 +31,13 @@ public class Collectible : MonoBehaviour {
 
 	[PunRPC]
 	public void SetID(int val){
-		phot.viewID = val;
+        if (val == 0)
+        {
+            Debug.Log("Not sure why this is being set to 0");
+        }
+        else {
+            phot.viewID = val;
+        }
 	}
 
 	[PunRPC]

@@ -6,15 +6,16 @@ public class RoomJoined : MonoBehaviour {
 
     public void OnJoinedRoom()
     {
-        Debug.Log("Connected players " + PhotonNetwork.playerList.Length.ToString());
+        //Debug.Log("Connected players " + PhotonNetwork.playerList.Length.ToString());
         Room r = PhotonNetwork.room;
+        GameManager.instance.inRoom = true;
         if (r != null)
         {
-            Debug.Log("in room");
+            //Debug.Log("in room");
             ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
             hash.Add("PlayerName", UIController.Instance.room.roomNameField.text);
             r.SetCustomProperties(hash);
-            Debug.Log("Setup values");
+            //Debug.Log("Setup values");
         }
        // UIController.Instance.room.AddRoomVariables();
         if(PhotonNetwork.playerList.Length == 1)

@@ -88,9 +88,9 @@ public class PlayerController : MonoBehaviour {
 	public void Jump(){
         rb.velocity += new Vector2(0f, jumpVelocity);
         canJump = false;
-        Debug.Log("jumping");
+        //Debug.Log("jumping");
         StartCoroutine(JumpRoutine());
-        SoundManager.Instance.PlaySFX("jump", 100);
+        SoundManager.Instance.PlaySFX("Jump", 100);
 	}
 
     public IEnumerator JumpRoutine()
@@ -138,11 +138,15 @@ public class PlayerController : MonoBehaviour {
 			//Debug.Log ("Hit Resource");
 			if (PhotonNetwork.isMasterClient) {
 				Collectible collect = col.GetComponent<Collectible> ();
-				if (collect.canCollect) {
-					collect.phot.RPC ("Collected", PhotonTargets.All);
-					Debug.Log ("collecting resource");
-					GameManager.instance.photView.RPC ("IncreaseResources", PhotonTargets.All);
-				}
+                if (collect != null)
+                {
+                    if (collect.canCollect)
+                    {
+                        collect.phot.RPC("Collected", PhotonTargets.All);
+                        Debug.Log("collecting resource");
+                        GameManager.instance.photView.RPC("IncreaseResources", PhotonTargets.All);
+                    }
+                }
 			}
 		}
     }

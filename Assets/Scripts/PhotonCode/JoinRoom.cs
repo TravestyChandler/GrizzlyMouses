@@ -45,7 +45,7 @@ public class JoinRoom : MonoBehaviour {
         }
         else
         {
-            Debug.Log("No rooms exist, please create one.");
+           // Debug.Log("No rooms exist, please create one.");
         }
     }
 
@@ -53,7 +53,7 @@ public class JoinRoom : MonoBehaviour {
 	{
         if (ConnectInUpdate && AutoConnect && !PhotonNetwork.connected)
         {
-            Debug.Log("Update() was called by Unity. Scene is loaded. Let's connect to the Photon Master Server. Calling: PhotonNetwork.ConnectUsingSettings();");
+            //Debug.Log("Update() was called by Unity. Scene is loaded. Let's connect to the Photon Master Server. Calling: PhotonNetwork.ConnectUsingSettings();");
 
             ConnectInUpdate = false;
             PhotonNetwork.ConnectUsingSettings(Version + "." + SceneManagerHelper.ActiveSceneBuildIndex);
@@ -72,7 +72,7 @@ public class JoinRoom : MonoBehaviour {
 
 	public virtual void OnJoinedLobby()
 	{
-		Debug.Log("OnJoinedLobby(). This client is connected and does get a room-list, which gets stored as PhotonNetwork.GetRoomList(). This script now calls: PhotonNetwork.JoinRandomRoom();");
+		//Debug.Log("OnJoinedLobby(). This client is connected and does get a room-list, which gets stored as PhotonNetwork.GetRoomList(). This script now calls: PhotonNetwork.JoinRandomRoom();");
     }
 
     public virtual void OnPhotonRandomJoinFailed()
@@ -91,15 +91,14 @@ public class JoinRoom : MonoBehaviour {
     {
         if (!PhotonNetwork.inRoom)
         {
-            Debug.Log("list updated");
-            Debug.Log(PhotonNetwork.GetRoomList().Length);
+           
             ShowRoomList();
         }
     }
 
     public void OnJoinedRoom()
 	{
-		Debug.Log("OnJoinedRoom() called by PUN. Now this client is in a room. From here on, your game would be running. For reference, all callbacks are listed in enum: PhotonNetworkingMessage");
-        Debug.Log(PhotonNetwork.GetRoomList().Length);
+		//Debug.Log("OnJoinedRoom() called by PUN. Now this client is in a room. From here on, your game would be running. For reference, all callbacks are listed in enum: PhotonNetworkingMessage");
+        //Debug.Log(PhotonNetwork.GetRoomList().Length);
     }
 }

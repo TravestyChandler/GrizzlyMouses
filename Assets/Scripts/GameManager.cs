@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour {
     public float maxPlayerX = -6f;
 	public bool player1Ready = false;
 	public bool player2Ready = false;
+    public bool inRoom = false;
 	public Vector3 NickStart;
     public List<BackgroundFrame> backgrounds;
     public List<MidBackgroundFrame> midBackgrounds;

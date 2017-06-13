@@ -7,6 +7,7 @@ public class SoundManager : MonoBehaviour {
     public List<AudioClip> soundEffects;
     public GameObject sfxPrefab, musicPrefab;
     private Dictionary<string, AudioClip> sfxDict;
+    public float overallVolume = 0f;
 	// Use this for initialization
 	void Awake () {
 	    if(Instance == null)
@@ -27,10 +28,11 @@ public class SoundManager : MonoBehaviour {
         foreach (AudioClip aud in soundEffects)
         {
             string audname = aud.name;
-            Debug.Log(audname);
+            //Debug.Log(audname);
             sfxDict.Add(audname, aud);
         }
         GameObject musicObject = Instantiate(musicPrefab, Vector3.zero, Quaternion.identity);
+        musicObject.GetComponent<AudioSource>().volume = overallVolume;
     }
 	
 	// Update is called once per frame
@@ -46,7 +48,7 @@ public class SoundManager : MonoBehaviour {
         AudioClip clip;
         if (sfxDict.ContainsKey(name)) {
             clip = sfxDict[name];
-            src.volume = ((float)volume / 100f);
+            src.volume = ((float)volume / 100f)*overallVolume;
             src.PlayOneShot(clip);
             Destroy(sfx, clip.length);
         }
