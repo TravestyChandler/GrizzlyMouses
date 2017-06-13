@@ -416,6 +416,7 @@ public class GameManager : MonoBehaviour {
         PhotonView nviews = frameObj.GetComponent<PhotonView>();
         nviews.viewID = photonID;
         FrameMover frame = frameObj.GetComponent<FrameMover>();
+        frame.StartCoroutine(frame.SetIDRoutine());
         frames.Add(frame);
         frame.FramePlacement(frames[frames.Count - 2]);
     }

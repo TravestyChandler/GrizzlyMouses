@@ -34,7 +34,7 @@ public class FrameMover : MonoBehaviour {
         }
         if (GameManager.instance.inRoom && !viewIdSet && PhotonNetwork.isMasterClient)
         {
-            StartCoroutine(SetIDRoutine());   
+            //StartCoroutine(SetIDRoutine());   
         }
     }
 
