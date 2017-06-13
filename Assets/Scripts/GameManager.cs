@@ -79,6 +79,7 @@ public class GameManager : MonoBehaviour {
 
     public IEnumerator powerTimer()
     {
+        Debug.Log("powerup timer running");
         float timer = 0f;
         while(timer < powerUpTimer)
         {
@@ -92,6 +93,7 @@ public class GameManager : MonoBehaviour {
     public void UsePowerUp(int type)
     {
         PlayerController.Instance.UsePowerUp(type);
+        PowerUpTimer();
     }
 
     [PunRPC]

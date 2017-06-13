@@ -22,7 +22,7 @@ public class RoomJoined : MonoBehaviour {
         {
             PhotonNetwork.playerName = "1";
             UIController.Instance.SetPlayerText("1");
-            GameManager.instance.photView.RequestOwnership();
+            //GameManager.instance.photView.RequestOwnership();
 			CameraController.Instance.SwapCameras (false);
         }
         else if (PhotonNetwork.playerList.Length == 2){

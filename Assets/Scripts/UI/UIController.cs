@@ -19,7 +19,7 @@ public class UIController : MonoBehaviour {
 
 	public RectTransform PausePanel;
 	public Text ResourcesText;
-
+    public Image shield, bolt, spring;
 	// Use this for initialization
 	void Awake () {
 		if(Instance == null)
@@ -51,7 +51,13 @@ public class UIController : MonoBehaviour {
     void Update () {
         distanceTraveled += (GameManager.instance.CurrentSpeed * Time.deltaTime);
         distTraveled.text = (Mathf.Abs((int)distanceTraveled)).ToString() + " m";
-	}
+        if (GameManager.instance.inRoom)
+        {
+            shield.fillAmount = Mathf.Clamp01(((float)GameManager.instance.resourcesCollected)/10f);
+            bolt.fillAmount = Mathf.Clamp01(((float)GameManager.instance.resourcesCollected) / 15f);
+            spring.fillAmount = Mathf.Clamp01(((float)GameManager.instance.resourcesCollected) / 5f);
+        }
+    }
 
     public void PauseGame()
     {

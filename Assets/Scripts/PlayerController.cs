@@ -96,14 +96,14 @@ public class PlayerController : MonoBehaviour {
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                if(GameManager.instance.resourcesCollected > 5)
+                if(GameManager.instance.resourcesCollected >= 5)
                 {
                     GameManager.instance.photView.RPC("UsePowerUp", PhotonTargets.All, 1);
                 }
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                if(GameManager.instance.resourcesCollected > 10)
+                if(GameManager.instance.resourcesCollected >= 10)
                 {
                     GameManager.instance.photView.RPC("UsePowerUp", PhotonTargets.All, 2);
 
@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour {
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                if(GameManager.instance.resourcesCollected > 15)
+                if(GameManager.instance.resourcesCollected >= 15)
                 {
                     GameManager.instance.photView.RPC("UsePowerUp", PhotonTargets.All, 3);
 
@@ -120,9 +120,10 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-
+    
     public void UsePowerUp(int type)
     {
+        Debug.Log("Use Power Up val " + type);
         if(state != PlayerStatus.Normal)
         {
             TurnOffPowerUps();
@@ -130,32 +131,43 @@ public class PlayerController : MonoBehaviour {
         if (type == 1)
         {
             //Super jump
+            Debug.Log("activating power up Jump");
             state = PlayerController.PlayerStatus.SuperJump;
             GameManager.instance.resourcesCollected -= 5;
+            sp.color = Color.red;
         }
         if (type == 2)
         {
             //Invincibility
+            Debug.Log("activating power up invincibility");
             state = PlayerController.PlayerStatus.Invincibility;
             rb.gravityScale = 0;
             GameManager.instance.resourcesCollected -= 10;
+            sp.color = Color.yellow;
         }
         if (type == 3)
         {
             //Super Speed
+            Debug.Log("activating power up superspeed");
             state = PlayerController.PlayerStatus.SuperSpeed;
             GameManager.instance.CurrentSpeed = GameManager.instance.SuperSpeed;
             GameManager.instance.resourcesCollected -= 15;
+            sp.color = Color.blue;
         }
         if (PhotonNetwork.isMasterClient)
         {
             GameManager.instance.PowerUpTimer();
+        }
+        else
+        {
+            UIController.Instance.ResourcesText.text = "x" + GameManager.instance.resourcesCollected;
         }
     }
 
     [PunRPC]
     public void TurnOffPowerUps()
     {
+        sp.color = Color.white;
         if(state == PlayerStatus.SuperJump)
         {
 
